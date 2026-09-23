@@ -29,6 +29,8 @@ public class DemoDataConfig {
         PasswordEncoder passwordEncoder
     ) {
         return args -> {
+            backfillLegacyUsers(userRepository);
+
             User admin = upsertDemoUser(
                 userRepository, passwordEncoder,
                 "Demo Admin", ADMIN_EMAIL, ADMIN_PASSWORD, Role.ADMIN
@@ -43,6 +45,18 @@ public class DemoDataConfig {
         };
     }
 
+    private void backfillLegacyUsers(UserRepository repository) {
+        Instant now = Instant.now();
+        for (User user : repository.findAll()) {
+            boolean changed = false;
+            if (user.role == null) { user.role = Role.USER; changed = true; }
+            if (user.enabled == null) { user.enabled = true; changed = true; }
+            if (user.createdAt == null) { user.createdAt = now; changed = true; }
+            if (user.updatedAt == null) { user.updatedAt = user.createdAt; changed = true; }
+            if (changed) repository.save(user);
+        }
+    }
+
     private User upsertDemoUser(
         UserRepository repository,
         PasswordEncoder encoder,
@@ -51,11 +65,15 @@ public class DemoDataConfig {
         String password,
         Role role
     ) {
+        Instant now = Instant.now();
         User user = repository.findByEmail(email).orElseGet(User::new);
         user.name = name;
         user.email = email;
         user.passwordHash = encoder.encode(password);
         user.role = role;
+        user.enabled = true;
+        if (user.createdAt == null) user.createdAt = now;
+        user.updatedAt = now;
         return repository.save(user);
     }
 
