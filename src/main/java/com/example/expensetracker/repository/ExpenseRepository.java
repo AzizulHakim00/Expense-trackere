@@ -9,10 +9,15 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface ExpenseRepository extends MongoRepository<Expense, String> {
     Optional<Expense> findByIdAndOwnerId(String id, String ownerId);
+    long countByOwnerId(String ownerId);
+    void deleteByOwnerId(String ownerId);
 
     @Query(
         value = "{ 'ownerId': ?0, 'date': { '$gte': ?1, '$lt': ?2 } }",
         sort = "{ 'date': -1, 'createdAt': -1 }"
     )
     List<Expense> findOwnedInDateRange(String ownerId, LocalDate start, LocalDate end);
+
+    @Query(value = "{ 'date': { '$gte': ?0, '$lt': ?1 } }")
+    List<Expense> findAllInDateRange(LocalDate start, LocalDate end);
 }
