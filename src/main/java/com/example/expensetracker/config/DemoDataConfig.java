@@ -64,10 +64,7 @@ public class DemoDataConfig {
         LocalDate monthStart = YearMonth.from(today).atDay(1);
         LocalDate monthEnd = monthStart.plusMonths(1);
 
-        if (!repository
-            .findByOwnerIdAndDateGreaterThanEqualAndDateLessThanOrderByDateDescCreatedAtDesc(
-                owner.id, monthStart, monthEnd)
-            .isEmpty()) {
+        if (!repository.findOwnedInDateRange(owner.id, monthStart, monthEnd).isEmpty()) {
             return;
         }
 
