@@ -11,13 +11,23 @@
 <label>Password<input name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required></label>
 <button class="primary full" type="submit">Log in <span aria-hidden="true">→</span></button></form>
 <p class="under-form">New here? <a href="/register">Create an account</a></p>
-<section class="demo-accounts" aria-label="Demo accounts">
-<div class="demo-heading"><strong>Demo accounts</strong><span>Click one to fill the login form</span></div>
+
+<section class="demo-accounts" aria-label="Demo login credentials">
+<div class="demo-heading">
+  <div><strong>Demo Login Credentials</strong><span>Use either account to test the application.</span></div>
+  <span class="demo-hint">Click a card to auto-fill</span>
+</div>
+
 <button type="button" class="demo-account" data-demo-email="admin@expense.local" data-demo-password="Admin123!">
-<span><b>Admin</b><small>ADMIN role</small></span><code>admin@expense.local</code><em>Admin123!</em>
+  <span class="demo-role"><b>Admin Account</b><small>ADMIN</small></span>
+  <span class="demo-values"><span><small>Email</small><code>admin@expense.local</code></span><span><small>Password</small><code>Admin123!</code></span></span>
+  <span class="demo-fill">Use account →</span>
 </button>
+
 <button type="button" class="demo-account" data-demo-email="user@expense.local" data-demo-password="User123!">
-<span><b>User</b><small>USER role</small></span><code>user@expense.local</code><em>User123!</em>
+  <span class="demo-role"><b>User Account</b><small>USER</small></span>
+  <span class="demo-values"><span><small>Email</small><code>user@expense.local</code></span><span><small>Password</small><code>User123!</code></span></span>
+  <span class="demo-fill">Use account →</span>
 </button>
 </section></div>
 <small>Track your spending with clarity.</small></section><section class="auth-art" aria-label="Expense summary illustration">
