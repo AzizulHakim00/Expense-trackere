@@ -21,7 +21,7 @@ public class ExpenseService {
     public List<ExpenseResponse> list(String ownerId, LocalDate start, LocalDate end) {
         if (start == null || end == null || !start.isBefore(end) || start.plusYears(5).isBefore(end))
             throw new IllegalArgumentException("Choose a valid date range shorter than five years");
-        return expenses.findByOwnerIdAndDateGreaterThanEqualAndDateLessThanOrderByDateDescCreatedAtDesc(ownerId,start,end)
+        return expenses.findOwnedInDateRange(ownerId,start,end)
             .stream().map(this::map).toList();
     }
 
