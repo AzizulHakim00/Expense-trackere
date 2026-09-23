@@ -1,5 +1,6 @@
 package com.example.expensetracker.model;
 
+import java.time.Instant;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,6 +12,9 @@ public class User {
     @Indexed(unique = true) public String email;
     public String passwordHash;
     public Role role;
+    public Boolean enabled = true;
+    public Instant createdAt;
+    public Instant updatedAt;
 
     public User() {}
 
@@ -19,9 +23,17 @@ public class User {
     }
 
     public User(String name, String email, String passwordHash, Role role) {
+        Instant now = Instant.now();
         this.name = name;
         this.email = email;
         this.passwordHash = passwordHash;
         this.role = role;
+        this.enabled = true;
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    public boolean isEnabledAccount() {
+        return enabled == null || enabled;
     }
 }
