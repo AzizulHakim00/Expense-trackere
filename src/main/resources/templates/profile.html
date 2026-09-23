@@ -1,0 +1,31 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Profile · Expense Tracker</title>
+<link rel="stylesheet" href="/css/app.css"></head><body class="dashboard-page"><div class="shell">
+<aside class="sidebar"><a th:href="${isAdmin ? '/admin/dashboard' : '/dashboard'}" class="brand">◈ &nbsp;Expense Tracker</a>
+<div class="nav-label">WORKSPACE</div><nav class="sidebar-nav">
+<a th:if="${!isAdmin}" class="nav-link" href="/dashboard">▦ &nbsp; Dashboard</a>
+<a th:if="${isAdmin}" class="nav-link" href="/admin/dashboard">▦ &nbsp; Admin Dashboard</a>
+<a th:if="${isAdmin}" class="nav-link" href="/admin/users">♙ &nbsp; Manage Users</a>
+<a class="nav-active" href="/profile">◎ &nbsp; My Profile</a></nav>
+<p class="sidebar-note">Keep your account details accurate and up to date.</p>
+<form action="/logout" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><button class="signout" type="submit">↪ &nbsp; Sign out</button></form></aside>
+
+<main class="workspace"><header class="topbar"><div><span class="eyebrow">PERSONAL ACCOUNT</span><h1>My profile</h1><p class="muted">Manage the account information used by Expense Tracker.</p></div></header>
+<p class="message" th:if="${param.updated}">Profile updated successfully.</p>
+<section class="stats profile-stats">
+<article class="stat accent"><span>ACCOUNT ROLE</span><strong th:text="${user.role}">USER</strong><small>Your access level</small></article>
+<article class="stat"><span>ACCOUNT STATUS</span><strong th:text="${user.enabledAccount ? 'Active' : 'Disabled'}">Active</strong><small>Login access</small></article>
+<article class="stat"><span>EMAIL</span><strong class="stat-email" th:text="${user.email}">user@example.com</strong><small>Used to sign in</small></article>
+</section>
+
+<div class="profile-layout"><section class="panel profile-panel"><div class="panel-head"><div><h2>Edit profile</h2><p class="muted">Update your name or email address.</p></div></div>
+<form class="profile-form" method="post" action="/profile" th:object="${profileForm}">
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+<label>Full name<input th:field="*{name}" maxlength="80" required></label><div class="field-error" th:errors="*{name}"></div>
+<label>Email address<input th:field="*{email}" type="email" maxlength="160" required></label><div class="field-error" th:errors="*{email}"></div>
+<p class="form-help">If you change your email, you will be signed out and can log in again using the new address.</p>
+<button class="primary" type="submit">Save profile</button>
+</form></section>
+<section class="panel account-card"><h2>Account details</h2><p class="muted">Basic information about this account.</p>
+<div class="detail-list"><div><span>Name</span><strong th:text="${user.name}">Name</strong></div><div><span>Role</span><strong th:text="${user.role}">USER</strong></div><div><span>Joined</span><strong th:text="${user.createdAt != null ? user.createdAt : '—'}">—</strong></div></div>
+</section></div></main></div></body></html>

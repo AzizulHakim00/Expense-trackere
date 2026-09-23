@@ -17,9 +17,19 @@ public class SecurityConfig {
     @Bean SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/register", "/css/**", "/js/**", "/actuator/health", "/favicon.ico").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/expenses/**", "/dashboard").hasRole("USER")
+                .requestMatchers("/profile/**", "/").authenticated()
                 .anyRequest().authenticated())
             .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-            .formLogin(login -> login.loginPage("/login").defaultSuccessUrl("/dashboard",true).permitAll())
+            .formLogin(login -> login
+                .loginPage("/login")
+                .successHandler((request, response, authentication) -> {
+                    boolean admin = authentication.getAuthorities().stream()
+                        .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+                    response.sendRedirect(admin ? "/admin/dashboard" : "/dashboard");
+                })
+                .permitAll())
             .logout(logout -> logout.logoutSuccessUrl("/login?logout").permitAll())
             .exceptionHandling(errors -> errors.defaultAuthenticationEntryPointFor(
                 (request,response,ex) -> response.sendError(HttpStatus.UNAUTHORIZED.value()),
