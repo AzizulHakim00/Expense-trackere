@@ -78,13 +78,15 @@ class ExpenseServiceTest {
     void calendarMonthAndMondayWeekHaveCorrectExclusiveEndAndTotals() {
         Expense lunch = new Expense(); lunch.amount = new BigDecimal("12.50"); lunch.category = "Food";
         Expense train = new Expense(); train.amount = new BigDecimal("3.20"); train.category = "Transport";
-        when(repository.findByOwnerIdAndDateGreaterThanEqualAndDateLessThanOrderByDateDescCreatedAtDesc(
-            eq("user-a"),any(),any())).thenReturn(List.of(lunch,train));
+        when(repository.findOwnedInDateRange(eq("user-a"),any(),any()))
+            .thenReturn(List.of(lunch,train));
+
         var monthly = service.month("user-a",YearMonth.of(2026,9));
         assertEquals(LocalDate.of(2026,9,1),monthly.start());
         assertEquals(LocalDate.of(2026,10,1),monthly.endExclusive());
         assertEquals(new BigDecimal("15.70"),monthly.total());
         assertEquals(new BigDecimal("12.50"),monthly.byCategory().get("Food"));
+
         var weekly = service.week("user-a",LocalDate.of(2026,9,23));
         assertEquals(LocalDate.of(2026,9,21),weekly.start());
         assertEquals(LocalDate.of(2026,9,28),weekly.endExclusive());
