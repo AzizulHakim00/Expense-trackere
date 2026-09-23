@@ -17,7 +17,55 @@ class ExpenseServiceTest {
     private final ExpenseRepository repository = mock(ExpenseRepository.class);
     private final ExpenseService service = new ExpenseService(repository);
 
-    @Test void otherUsersCannotReadUpdateOrDeleteAnExpense() {
+    @Test
+    void createUpdateAndDeletePersistOwnedExpenses() {
+        ExpenseRequest createRequest = new ExpenseRequest(
+            "Groceries", new BigDecimal("25.50"), "Food",
+            LocalDate.of(2026, 9, 23), "Market"
+        );
+
+        when(repository.save(any(Expense.class))).thenAnswer(invocation -> {
+            Expense expense = invocation.getArgument(0);
+            if (expense.id == null) {
+                expense.id = "expense-1";
+            }
+            return expense;
+        });
+
+        var created = service.create("user-a", createRequest);
+        assertEquals("expense-1", created.id());
+        assertEquals("Groceries", created.title());
+        assertEquals(new BigDecimal("25.50"), created.amount());
+
+        Expense stored = new Expense();
+        stored.id = "expense-1";
+        stored.ownerId = "user-a";
+        stored.title = "Groceries";
+        stored.amount = new BigDecimal("25.50");
+        stored.category = "Food";
+        stored.date = LocalDate.of(2026, 9, 23);
+        stored.note = "Market";
+
+        when(repository.findByIdAndOwnerId("expense-1", "user-a"))
+            .thenReturn(Optional.of(stored));
+
+        ExpenseRequest updateRequest = new ExpenseRequest(
+            "Groceries and fruit", new BigDecimal("31.25"), "Food",
+            LocalDate.of(2026, 9, 23), "Updated"
+        );
+
+        var updated = service.update("user-a", "expense-1", updateRequest);
+        assertEquals("Groceries and fruit", updated.title());
+        assertEquals(new BigDecimal("31.25"), updated.amount());
+        assertEquals("Updated", updated.note());
+
+        service.delete("user-a", "expense-1");
+        verify(repository).delete(stored);
+        verify(repository, times(2)).save(any(Expense.class));
+    }
+
+    @Test
+    void otherUsersCannotReadUpdateOrDeleteAnExpense() {
         when(repository.findByIdAndOwnerId("id", "user-b")).thenReturn(Optional.empty());
         assertThrows(ResponseStatusException.class, () -> service.get("user-b", "id"));
         assertThrows(ResponseStatusException.class, () -> service.update("user-b", "id",
@@ -26,7 +74,8 @@ class ExpenseServiceTest {
         verify(repository, never()).delete(any());
     }
 
-    @Test void calendarMonthAndMondayWeekHaveCorrectExclusiveEndAndTotals() {
+    @Test
+    void calendarMonthAndMondayWeekHaveCorrectExclusiveEndAndTotals() {
         Expense lunch = new Expense(); lunch.amount = new BigDecimal("12.50"); lunch.category = "Food";
         Expense train = new Expense(); train.amount = new BigDecimal("3.20"); train.category = "Transport";
         when(repository.findByOwnerIdAndDateGreaterThanEqualAndDateLessThanOrderByDateDescCreatedAtDesc(

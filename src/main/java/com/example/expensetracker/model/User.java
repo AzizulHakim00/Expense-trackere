@@ -10,8 +10,18 @@ public class User {
     public String name;
     @Indexed(unique = true) public String email;
     public String passwordHash;
+    public Role role;
+
     public User() {}
+
     public User(String name, String email, String passwordHash) {
-        this.name = name; this.email = email; this.passwordHash = passwordHash;
+        this(name, email, passwordHash, Role.USER);
+    }
+
+    public User(String name, String email, String passwordHash, Role role) {
+        this.name = name;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.role = role;
     }
 }
