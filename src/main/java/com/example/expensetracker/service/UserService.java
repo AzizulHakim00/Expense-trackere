@@ -98,8 +98,14 @@ public class UserService implements UserDetailsService {
         if (users.existsByEmailAndIdNot(normalized, target.id)) {
             throw new IllegalArgumentException("Email is already registered");
         }
+        if (actor.id.equals(target.id) && !target.email.equals(normalized)) {
+            throw new IllegalArgumentException("Use My Profile to change your own email");
+        }
         if (actor.id.equals(target.id) && role != Role.ADMIN) {
             throw new IllegalArgumentException("You cannot remove your own administrator role");
+        }
+        if (DEMO_ADMIN_EMAIL.equals(target.email) && !DEMO_ADMIN_EMAIL.equals(normalized)) {
+            throw new IllegalArgumentException("The demo administrator email cannot be changed");
         }
         if (DEMO_ADMIN_EMAIL.equals(target.email) && role != Role.ADMIN) {
             throw new IllegalArgumentException("The demo administrator must remain an ADMIN");
