@@ -1,0 +1,18 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign in · Expense Tracker</title>
+<link rel="stylesheet" href="/css/app.css"></head><body class="auth-page">
+<main class="auth-card"><section class="auth-form"><a class="brand" href="/login">◈ &nbsp;Expense Tracker</a>
+<div class="auth-main"><span class="eyebrow">WELCOME BACK</span><h1>Login</h1><p class="muted">Your money, made easier to understand.</p>
+<p class="notice success" th:if="${registered}">Account created. Please sign in.</p>
+<p class="notice error" th:if="${param.error}">Incorrect email or password.</p>
+<p class="notice success" th:if="${param.logout}">You have signed out.</p>
+<form method="post" action="/login"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+<label>Email address<input name="username" type="email" autocomplete="username" placeholder="you@example.com" required autofocus></label>
+<label>Password<input name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required></label>
+<button class="primary full" type="submit">Log in <span aria-hidden="true">→</span></button></form>
+<p class="under-form">New here? <a href="/register">Create an account</a></p></div>
+<small>Track your spending with clarity.</small></section><section class="auth-art" aria-label="Expense summary illustration">
+<div class="decor-orb orb-one"></div><div class="decor-orb orb-two"></div><div class="visual-card"><div class="visual-title">Monthly overview <span>•••</span></div>
+<div class="visual-value">$2,485.00</div><div class="visual-caption">Your spending at a glance</div><div class="bars"><i style="height:36%"></i><i style="height:68%"></i><i style="height:49%"></i><i style="height:88%"></i><i style="height:61%"></i><i style="height:76%"></i><i style="height:53%"></i></div>
+<div class="visual-row"><span>● &nbsp; Shopping</span><b>$620</b></div><div class="visual-row"><span>● &nbsp; Food &amp; drink</span><b>$395</b></div></div>
+<div class="float-chip">↗ &nbsp; Stay on top of your budget</div><h2>Check Your Money Progress</h2><p>A simple place to see where your money goes, week by week and month by month.</p></section></main></body></html>
