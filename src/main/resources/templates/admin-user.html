@@ -1,0 +1,31 @@
+<!doctype html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Edit User · Expense Tracker</title>
+<link rel="stylesheet" href="/css/app.css"></head><body class="dashboard-page"><div class="shell">
+<aside class="sidebar"><a href="/admin/dashboard" class="brand">◈ &nbsp;Expense Tracker</a><div class="nav-label">ADMIN WORKSPACE</div>
+<nav class="sidebar-nav"><a class="nav-link" href="/admin/dashboard">▦ &nbsp; Dashboard</a><a class="nav-active" href="/admin/users">♙ &nbsp; Manage Users</a><a class="nav-link" href="/profile">◎ &nbsp; My Profile</a></nav>
+<p class="sidebar-note">Manage account identity, access, and role safely.</p>
+<form action="/logout" method="post"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><button class="signout" type="submit">↪ &nbsp; Sign out</button></form></aside>
+
+<main class="workspace"><header class="topbar"><div><span class="eyebrow">USER PROFILE</span><h1 th:text="${target.name}">User profile</h1><p class="muted" th:text="${target.email}">email</p></div><a class="secondary button-link" href="/admin/users">← Back to users</a></header>
+<p class="message" th:if="${adminSuccess}" th:text="${adminSuccess}"></p>
+<section class="stats profile-stats"><article class="stat accent"><span>ROLE</span><strong th:text="${target.role}">USER</strong><small>Account permission level</small></article>
+<article class="stat"><span>STATUS</span><strong th:text="${target.enabledAccount ? 'Active' : 'Disabled'}">Active</strong><small>Login access</small></article>
+<article class="stat"><span>EXPENSES</span><strong th:text="${expenseCount}">0</strong><small>Owned expense records</small></article></section>
+
+<div class="profile-layout"><section class="panel profile-panel"><div class="panel-head"><div><h2>Edit user</h2><p class="muted">Update profile information or role.</p></div></div>
+<form class="profile-form" method="post" th:action="@{/admin/users/{id}(id=${target.id})}" th:object="${userForm}">
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+<div class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+<label>Full name<input th:field="*{name}" maxlength="80" required></label><div class="field-error" th:errors="*{name}"></div>
+<label>Email address<input th:field="*{email}" type="email" maxlength="160" required th:readonly="${isDemoAdmin}"></label><div class="field-error" th:errors="*{email}"></div>
+<label>Role<select th:field="*{role}" th:disabled="${isDemoAdmin}"><option th:each="r : ${roles}" th:value="${r}" th:text="${r}"></option></select></label><input th:if="${isDemoAdmin}" type="hidden" name="role" value="ADMIN">
+<p class="form-help" th:if="${isSelf}">For your own email address, use My Profile so your login session can be updated safely.</p>
+<button class="primary" type="submit">Save user</button></form></section>
+
+<section class="panel account-card"><h2>Account controls</h2><p class="muted">Administrative actions for this account.</p><div class="detail-list">
+<div><span>Account ID</span><strong class="mono" th:text="${target.id}">id</strong></div><div><span>Joined</span><strong th:text="${target.createdAt != null ? target.createdAt : '—'}">—</strong></div></div>
+<div class="account-actions" th:if="${!isSelf && !isDemoAdmin}">
+<form method="post" th:action="@{/admin/users/{id}/status(id=${target.id})}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><button class="secondary full-action" type="submit" th:text="${target.enabledAccount ? 'Disable account' : 'Enable account'}">Disable account</button></form>
+<form method="post" th:action="@{/admin/users/{id}/delete(id=${target.id})}" onsubmit="return confirm('Delete this user and all owned expenses?');"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><button class="danger full-action" type="submit">Delete user</button></form></div>
+<p class="form-help" th:if="${isSelf}">You cannot disable or delete your own administrator account.</p><p class="form-help" th:if="${isDemoAdmin}">The demo administrator is protected from disable, delete, role, and email changes.</p>
+</section></div></main></div></body></html>
